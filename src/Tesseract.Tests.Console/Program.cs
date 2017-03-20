@@ -8,8 +8,6 @@ namespace Tesseract.Tests.Console
 
         public static void Main(string[] args)
         {
-            System.Console.WriteLine("Is 64bit process: {0}", Environment.Is64BitProcess);
-
             try {
                 var program = new Program();
 

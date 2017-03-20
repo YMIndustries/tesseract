@@ -26,5 +26,10 @@ namespace Tesseract
 		protected TesseractException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            return base.GetObjectData(info, context);
+        }
 	}
 }
