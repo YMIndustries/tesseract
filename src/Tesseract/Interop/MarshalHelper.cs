@@ -23,7 +23,7 @@ namespace Tesseract.Interop
         public static string PtrToString(IntPtr handle, Encoding encoding)
         {
             var length = StrLength(handle);
-            return new String((sbyte*)handle.ToPointer(), 0, length, encoding);
+            return encoding.GetString(new [] { *((byte*)handle.ToPointer()) }, 0, length);
         }
 
         /// <summary>

@@ -74,7 +74,7 @@ namespace InteropDotNet
 
         private IntPtr CheckExecutingAssemblyDomain(string fileName, string platformName)
         {
-            var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var baseDirectory = Path.GetDirectoryName(typeof(LibraryLoader).GetTypeInfo().Assembly.Location);
             LibraryLoaderTrace.TraceInformation("Checking executing application domain location '{0}' for '{1}' on platform {2}.", baseDirectory, fileName, platformName);
             return InternalLoadLibrary(baseDirectory, platformName, fileName);
         }
@@ -114,7 +114,7 @@ namespace InteropDotNet
 
         private IntPtr CheckWorkingDirecotry(string fileName, string platformName)
         {
-            var baseDirectory = Path.GetFullPath(Environment.CurrentDirectory);
+            var baseDirectory = Path.GetFullPath(Directory.GetCurrentDirectory());
             LibraryLoaderTrace.TraceInformation("Checking working directory '{0}' for '{1}' on platform {2}.", baseDirectory, fileName, platformName);
             return InternalLoadLibrary(baseDirectory, platformName, fileName);
         }

@@ -8,7 +8,7 @@ namespace Tesseract
 	/// Desctiption of TesseractException.
 	/// </summary>
 	[Serializable]
-	public class TesseractException : Exception, ISerializable
+	public class TesseractException : Exception
 	{
 		public TesseractException()
 		{
@@ -21,15 +21,5 @@ namespace Tesseract
 		public TesseractException(string message, Exception innerException) : base(message, innerException)
 		{
 		}
-
-		// This constructor is needed for serialization.
-		protected TesseractException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-		}
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            return base.GetObjectData(info, context);
-        }
 	}
 }

@@ -15,13 +15,13 @@ namespace InteropDotNet
         public static T CreateInstance<T>() where T : class
         {
             var interfaceType = typeof(T);
-            if (!typeof(T).IsInterface)
+            if (!typeof(T).GetTypeInfo().IsInterface)
                 throw new Exception(string.Format("The type {0} should be an interface", interfaceType.Name));
-            if (!interfaceType.IsPublic)
+            if (!interfaceType.GetTypeInfo().IsPublic)
                 throw new Exception(string.Format("The interface {0} should be public", interfaceType.Name));
 
             var assemblyName = GetAssemblyName(interfaceType);
-            var assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName);
 
             var typeName = GetImplementationTypeName(assemblyName, interfaceType);
@@ -34,7 +34,7 @@ namespace InteropDotNet
             ImplementMethods(typeBuilder, methods);
             ImplementConstructor(typeBuilder, methods);
 
-            var implementationType = typeBuilder.CreateType();
+            var implementationType = typeBuilder.CreateTypeInfo().GetType();
             return (T)Activator.CreateInstance(implementationType, LibraryLoader.Instance);
         }
 
@@ -120,7 +120,7 @@ namespace InteropDotNet
             methodBuilder.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
 
             // Create type
-            return delegateBuilder.CreateType();
+            return delegateBuilder.CreateTypeInfo().GetType();
         }
 
         private static void ImplementFields(TypeBuilder typeBuilder, IEnumerable<MethodItem> methods)
@@ -250,10 +250,10 @@ namespace InteropDotNet
 
         private static RuntimeDllImportAttribute GetRuntimeDllImportAttribute(MethodInfo methodInfo)
         {
-            var attributes = methodInfo.GetCustomAttributes(typeof(RuntimeDllImportAttribute), true);
-            if (attributes.Length == 0)
+            var attributes = (List<Attribute>)methodInfo.GetCustomAttributes(typeof(RuntimeDllImportAttribute), true);
+            if (attributes.Count == 0)
                 throw new Exception(string.Format("RuntimeDllImportAttribute for method '{0}' not found", methodInfo.Name));
-            return (RuntimeDllImportAttribute)attributes[0];
+            return (RuntimeDllImportAttribute) attributes[0];
         }
 
         private static void LdArg(ILGenerator ilGen, int index)

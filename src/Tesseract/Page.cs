@@ -185,7 +185,7 @@ namespace Tesseract
                 bool tesseditWriteImages;
                 if (Engine.TryGetBoolVariable("tessedit_write_images", out tesseditWriteImages) && tesseditWriteImages) {
                     using (Pix thresholdedImage = GetThresholdedImage()) {
-                        string filePath = Path.Combine(Environment.CurrentDirectory, "tessinput.tif");
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "tessinput.tif");
                         try {
                             thresholdedImage.Save(filePath, ImageFormat.TiffG4);
                             trace.TraceEvent(TraceEventType.Information, 2, "Successfully saved the thresholded image to '{0}'", filePath);
