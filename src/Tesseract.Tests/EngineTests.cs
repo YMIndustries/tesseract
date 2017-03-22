@@ -268,7 +268,7 @@ NormaliseNewLine(@"</word></line>
 		[Test]
 		public void Initialise_CanLoadConfigFile()
 		{
-			var tessDataPath = Path.Combine(Environment.CurrentDirectory, @"tessdata\");
+			var tessDataPath = Path.Combine(Directory.GetCurrentDirectory(), @"tessdata\");
 			using (var engine = new TesseractEngine(tessDataPath, "eng", EngineMode.Default, "bazzar")) {
 				// verify that the config file was loaded
 				string user_patterns_suffix;
@@ -333,7 +333,7 @@ NormaliseNewLine(@"</word></line>
 		[Test]
 		public void Initialise_WithTessDataPrefixSet()
 		{
-			Environment.SetEnvironmentVariable("TESSDATA_PREFIX", Environment.CurrentDirectory);
+			Environment.SetEnvironmentVariable("TESSDATA_PREFIX", Directory.GetCurrentDirectory());
 			using (var engine = new TesseractEngine(null, "eng", EngineMode.Default)) {
 			}
 		}
@@ -348,11 +348,11 @@ NormaliseNewLine(@"</word></line>
 				@"./tessdata",
 				@"./tessdata/",
 				@".\tessdata\",
-				Path.Combine(Environment.CurrentDirectory, @"tessdata"),
-				Path.Combine(Environment.CurrentDirectory, @"tessdata\"),
-				Path.Combine(Environment.CurrentDirectory, @"tessdata/"),
-				Environment.CurrentDirectory
-			};
+				Path.Combine(Directory.GetCurrentDirectory(), @"tessdata"),
+				Path.Combine(Directory.GetCurrentDirectory(), @"tessdata\"),
+				Path.Combine(Directory.GetCurrentDirectory(), @"tessdata/"),
+                Directory.GetCurrentDirectory()
+            };
 		}
 
 		private string WriteResultsToString(Page page, bool outputChoices)
@@ -567,7 +567,7 @@ NormaliseNewLine(@"</word></line>
 
 		private string TestFilePath(string path)
 		{
-			var basePath = Path.Combine(Environment.CurrentDirectory, "Data");
+			var basePath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
 			return Path.Combine(basePath, path);
 		}
 

@@ -5,4 +5,14 @@
     <TargetFramework>netcoreapp1.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tesseract.Tests\Tesseract.Tests.csproj" />
+    <ProjectReference Include="..\Tesseract\Tesseract.csproj" />
+  </ItemGroup>
+
 </Project>

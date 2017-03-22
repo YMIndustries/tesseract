@@ -13,7 +13,7 @@ namespace Tesseract.Tests.Leptonica
 		/// <summary>
 		/// 
 		/// </summary>
-		[Test, Ignore]
+		[Test, Ignore("No clue why this test is ignored, but it is")]
 		public void ConvertToBitmap()
 		{
 			const double BaseRunTime = 793.382;
