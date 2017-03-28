@@ -250,7 +250,7 @@ namespace InteropDotNet
 
         private static RuntimeDllImportAttribute GetRuntimeDllImportAttribute(MethodInfo methodInfo)
         {
-            var attributes = (List<Attribute>)methodInfo.GetCustomAttributes(typeof(RuntimeDllImportAttribute), true);
+            var attributes = new List<Attribute>(methodInfo.GetCustomAttributes(typeof(RuntimeDllImportAttribute), true));
             if (attributes.Count == 0)
                 throw new Exception(string.Format("RuntimeDllImportAttribute for method '{0}' not found", methodInfo.Name));
             return (RuntimeDllImportAttribute) attributes[0];
