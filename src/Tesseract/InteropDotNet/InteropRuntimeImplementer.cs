@@ -34,8 +34,9 @@ namespace InteropDotNet
             ImplementMethods(typeBuilder, methods);
             ImplementConstructor(typeBuilder, methods);
 
-            var implementationType = typeBuilder.CreateTypeInfo().GetType();
-            return (T)Activator.CreateInstance(implementationType, LibraryLoader.Instance);
+            var implementationTypeInfo = typeBuilder.CreateTypeInfo();
+            var constructor = implementationTypeInfo.GetConstructor(new Type[] { LibraryLoader.Instance.GetType() });
+            return (T) constructor.Invoke(new Object[] { LibraryLoader.Instance });
         }
 
         #region Main steps
@@ -62,7 +63,7 @@ namespace InteropDotNet
                 method.DelegateType = ImplementMethodDelegate(assemblyName, moduleBuilder, method);
         }
 
-        private static Type ImplementMethodDelegate(string assemblyName, ModuleBuilder moduleBuilder, MethodItem method)
+        private static TypeInfo ImplementMethodDelegate(string assemblyName, ModuleBuilder moduleBuilder, MethodItem method)
         {
             // Consts
             const MethodAttributes methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
@@ -120,7 +121,7 @@ namespace InteropDotNet
             methodBuilder.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
 
             // Create type
-            return delegateBuilder.CreateTypeInfo().GetType();
+            return delegateBuilder.CreateTypeInfo();
         }
 
         private static void ImplementFields(TypeBuilder typeBuilder, IEnumerable<MethodItem> methods)
@@ -128,7 +129,7 @@ namespace InteropDotNet
             foreach (var method in methods)
             {
                 var fieldName = method.Info.Name + "Field";
-                var fieldBuilder = typeBuilder.DefineField(fieldName, method.DelegateType, FieldAttributes.Private);
+                var fieldBuilder = typeBuilder.DefineField(fieldName, method.DelegateType.GetType(), FieldAttributes.Private);
                 method.FieldInfo = fieldBuilder;
             }
         }
@@ -153,7 +154,8 @@ namespace InteropDotNet
                 for (int i = 0; i < infoArray.Length; i++)
                     LdArg(ilGen, i + 1);
                 // Invoke delegate
-                ilGen.Emit(OpCodes.Callvirt, method.DelegateType.GetMethod("Invoke"));
+                var meth = method.DelegateType.GetMethod("Invoke");
+                ilGen.Emit(OpCodes.Callvirt, meth);
                 // Return value
                 ilGen.Emit(OpCodes.Ret);
 
@@ -229,14 +231,14 @@ namespace InteropDotNet
                 // Load methodHandle from locals
                 ilGen.Emit(OpCodes.Ldloc_1);
                 // Load methodDelegate token
-                ilGen.Emit(OpCodes.Ldtoken, method.DelegateType);
+                ilGen.Emit(OpCodes.Ldtoken, method.DelegateType.GetType());
                 // Call typeof(methodDelegate)                                
                 ilGen.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
                 // Call Marshal.GetDelegateForFunctionPointer(methodHandle, typeof(methodDelegate))
                 ilGen.Emit(OpCodes.Call, typeof(Marshal).GetMethod("GetDelegateForFunctionPointer",
                     new[] { typeof(IntPtr), typeof(Type) }));
                 // Cast result to typeof(methodDelegate)
-                ilGen.Emit(OpCodes.Castclass, method.DelegateType);
+                ilGen.Emit(OpCodes.Castclass, method.DelegateType.GetType());
                 // Store result in methodField
                 ilGen.Emit(OpCodes.Stfld, method.FieldInfo);
             }
@@ -297,7 +299,7 @@ namespace InteropDotNet
             public MethodInfo Info { get; set; }
             public RuntimeDllImportAttribute DllImportAttribute { get; set; }
 
-            public Type DelegateType { get; set; }
+            public TypeInfo DelegateType { get; set; }
             public FieldInfo FieldInfo { get; set; }
 
             public string Name { get { return Info.Name; } }
